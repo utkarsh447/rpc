@@ -12,18 +12,36 @@ var storage =   multer.diskStorage({
   	var pdf_path = variables.upload_path + fn;
     callback(null, fn);
     pdfUtil.pdfToText(pdf_path, function(err, data) {
-	  if (err) throw(err);
-	  console.log(data); //Need to store it in DB    
-	});
+  	  if (err) throw(err);
+  	  // console.log(data); //Need to store it in DB    
+
+      var uname = req.session.user.username;
+      console.log(uname);
+      
+      /*TODO: WHY THE FUCK INSERTION IS NOT BEING DONE IN DATABASE?*/
+
+      var sql = "INSERT INTO `rps`(`uname`,`rpname`,`rpdata`) VALUES ('" + uname + "','" + fn + "','" + data + "')";
+
+      var query = db.query(sql, function(err, result) {
+
+        console.log("Succesfully Done.");
+      });      
+	   });
   }
 });
 var upload = multer({ storage : storage}).single('userPdf');
 
 app.get("/", function(req, res){
+  var user =  req.session.user,
+  userId = req.session.userId;
+   // console.log('ddd='+userId);
+  if(userId == null){
+     res.redirect("/login");
+     return;
+  }
 	var message = 'Stupid Research Paper Catalog';
 	var message1 = '';
-  	res.render('rpc/rpc',{message: message, message1: message1});
- 
+	res.render('rpc/rpc',{message: message, message1: message1});
 })
 
 app.post('/upload',function(req,res){
@@ -33,11 +51,7 @@ app.post('/upload',function(req,res){
         if(err) {
             return res.end("Error uploading file.");
         }
-        // res.end("File is uploaded");
         res.redirect("../home/dashboard");
-        // res.status(200);
-        // res.redirect('rpc', {message: message, message1: message1})
-        // res.redirect('dashboard');
     });
 });
 

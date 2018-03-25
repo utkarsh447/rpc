@@ -36,7 +36,7 @@ app.post("/login", function(req, res){
    var name= post.user_name;
    var pass= post.password;
   
-   var sql="SELECT id, username, password, email FROM `user` WHERE `username`='"+name+"' and password = '"+pass+"'";                           
+   var sql="SELECT id, username, email FROM `user` WHERE `username`='"+name+"' and password = '"+pass+"'";                           
    db.query(sql, function(err, results){      
       if(results.length){
          req.session.userId = results[0].id;
