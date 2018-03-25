@@ -1,0 +1,1 @@
+exports.upload_path = "/home/utkarsh/websites/node_2nd/nodejs_auth_example/uploads/"
