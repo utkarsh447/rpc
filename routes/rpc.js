@@ -13,7 +13,7 @@ var storage =   multer.diskStorage({
     callback(null, fn);
     pdfUtil.pdfToText(pdf_path, function(err, data) {
   	  if (err) throw(err);
-  	  // console.log(data); //Need to store it in DB    
+  	  console.log(data); //Need to store it in DB    
 
       var uname = req.session.user.username;
       console.log(uname);

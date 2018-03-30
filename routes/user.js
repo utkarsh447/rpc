@@ -1,6 +1,8 @@
 var express = require('express');
 var app = express.Router();
 
+var User = require("../models/user").user_model;
+var VerifyToken = require("./VerifyToken");
 
 app.get("/", function(req, res){
    var message = '';
@@ -10,18 +12,22 @@ app.get("/", function(req, res){
 
 app.post("/signup", function(req, res){
    message = '';
-   var post  = req.body;
-   var name= post.user_name;
-   var pass= post.password;
-   var email= post.email;
+   var name= req.body.user_name;
+   var pass= req.body.password;
+   var email= req.body.email;
 
-   var sql = "INSERT INTO `user`(`username`,`password`,`email`) VALUES ('" + name + "','" + pass + "','" + email + "')";
-
-   var query = db.query(sql, function(err, result) {
-
-      message = "Succesfully! Your account has been created.";
-      res.render('signup.ejs',{message: message});
-   });
+   User.forge({
+        username: name,
+        password: pass,
+        email: email
+    }, {method: "insert"})
+      .save()
+      .then(function(response){
+         console.log("Added");
+         res.redirect("/login");
+      }).catch(function(reason){
+         console.error(reason);
+      })
 });
 
 app.get("/signup", function(req, res){
@@ -31,25 +37,27 @@ app.get("/signup", function(req, res){
 
 app.post("/login", function(req, res){
    var message = '';
-   var sess = req.session; 
-   var post  = req.body;
-   var name= post.user_name;
-   var pass= post.password;
-  
-   var sql="SELECT id, username, email FROM `user` WHERE `username`='"+name+"' and password = '"+pass+"'";                           
-   db.query(sql, function(err, results){      
-      if(results.length){
-         req.session.userId = results[0].id;
-         req.session.user = results[0];
-         console.log(results[0].id);
-         res.redirect('/home/dashboard');
-      }
-      else{
-         message = 'Wrong Credentials.';
-         res.render('index.ejs',{message: message});
-      }
-              
-   });
+   var sess = req.session;
+   var name= req.body.user_name;
+   var pass= req.body.password;
+
+   User.where({
+      username: name,
+      password: pass
+   })
+      .fetch()
+      .then(function(user){
+         if(user===null){
+            message = 'Wrong Credentials.';
+            res.render('index.ejs',{message: message});
+         }
+         else{
+            user1 = user.toJSON();            
+            req.session.userId = user1.id;
+            req.session.user = user1           
+            res.redirect('/home/dashboard');
+         }
+      })
 });
 
 app.get("/login", function(req, res){
@@ -57,20 +65,10 @@ app.get("/login", function(req, res){
    res.render('index.ejs',{message: message});
 })
 
-app.get("/home/dashboard", function(req, res, next){
+app.get("/home/dashboard", VerifyToken, function(req, res, next){
    var user =  req.session.user,
    userId = req.session.userId;
-   // console.log('ddd='+userId);
-   if(userId == null){
-      res.redirect("/login");
-      return;
-   }
-
-   var sql="SELECT * FROM `user` WHERE `id`='"+userId+"'";
-
-   db.query(sql, function(err, results){
-      res.render('dashboard.ejs', {user:user});    
-   });
+   res.render('dashboard.ejs', {user:user});    
 })
 
 app.get("/home/logout",function(req, res){
@@ -79,17 +77,17 @@ app.get("/home/logout",function(req, res){
    })
 })
 
-app.get("/home/profile", function(req, res){
-      var userId = req.session.userId;
-   if(userId == null){
-      res.redirect("/login");
-      return;
-   }
-
-   var sql="SELECT * FROM `user` WHERE `id`='"+userId+"'";          
-   db.query(sql, function(err, result){  
-      res.render('profile.ejs',{data:result});
-   });
+app.get("/home/profile", VerifyToken, function(req, res){
+   var userId = req.session.userId;
+   console.log(userId);
+   User.forge({
+      id:userId
+   })
+      .fetch()
+      .then(function(user){
+         user1 = user.toJSON();
+         res.render('profile', {data: user1});
+      })
 })
 
 module.exports = app;
