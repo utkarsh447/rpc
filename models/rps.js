@@ -1,6 +1,6 @@
 var db = require("./database.js");
 
-var user_model = db.Model.extend({
+var rps_model = db.Model.extend({
   tableName: "rps",
   idAttribute: "id"
 

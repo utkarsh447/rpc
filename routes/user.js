@@ -1,7 +1,9 @@
 var express = require('express');
 var app = express.Router();
+var fs = require("fs");
 
 var User = require("../models/user").user_model;
+var Rps = require("../models/rps").rps_model;
 var VerifyToken = require("./VerifyToken");
 
 app.get("/", function(req, res){
@@ -23,7 +25,10 @@ app.post("/signup", function(req, res){
     }, {method: "insert"})
       .save()
       .then(function(response){
-         console.log("Added");
+         // console.log("response: " + JSON.stringify(response, null, "  "));
+         response_json = response.toJSON();
+         path = "./uploads/"+ response_json.id;
+         fs.mkdirSync(path);
          res.redirect("/login");
       }).catch(function(reason){
          console.error(reason);
@@ -80,7 +85,8 @@ app.get("/home/logout",function(req, res){
 app.get("/home/profile", VerifyToken, function(req, res){
    var userId = req.session.userId;
    console.log(userId);
-   User.forge({
+
+   Rps.forge({
       id:userId
    })
       .fetch()

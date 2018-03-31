@@ -16,6 +16,7 @@
     "body-parser": "^1.16.1",
     "bookshelf": "^0.13.3",
     "ejs": "^2.5.6",
+    "elasticsearch": "^14.2.2",
     "express": "^4.14.1",
     "express-session": "^1.15.1",
     "knex": "^0.14.4",

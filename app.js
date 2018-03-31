@@ -11,19 +11,10 @@ var session = require('express-session');
 var app = express();
 var mysql      = require('mysql');
 var bodyParser=require("body-parser");
-var connection = mysql.createConnection({
-              host     : 'localhost',
-              user     : 'root',
-              password : 'sample',
-              database : 'rpc'
-            });
- 
-connection.connect();
- 
-global.db = connection;
- 
+
+var VerifyToken = require("./routes/VerifyToken");
+
 // all environments
-app.set('port', process.env.PORT || 8080);
 app.set('views', __dirname + '/views');
 app.set('view engine', 'ejs');
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -41,11 +32,11 @@ app.use(session({
 var rpc = require("./routes/rpc");
 
 app.use("/", user);
-app.use("/rpc", rpc);
+app.use("/rpc",VerifyToken, rpc);
 
 //Middleware
 app.listen(3000, function(req, res){
-  console.log("Listening");
+  console.log("Listening at 3000");
 })
 
 module.exports = app;
