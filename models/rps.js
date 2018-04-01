@@ -2,8 +2,11 @@ var db = require("./database.js");
 
 var rps_model = db.Model.extend({
   tableName: "rps",
-  idAttribute: "id"
+  idAttribute: "id",
 
+  user: function () {
+    return this.belongsTo("user", "id");
+  }
 });
 
 var rps = db.Collection.extend({

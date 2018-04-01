@@ -1,0 +1,27 @@
+<%- include ../layouts/header %>
+<div class="row">
+    <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6 col-xs-offset-0 col-sm-offset-0 col-md-offset-3 col-lg-offset-3 toppad" >
+
+      <div class="panel panel-info">
+        <div class="panel-heading">
+          <h3 class="panel-title">Search Your Research Paper </h3>
+        </div>
+        <div class="panel-body">
+          <div class="row">
+            <div class=" col-md-9 col-lg-9 "> 
+              <form id="searchform" class="form-horizontal" role="form" method="post" action="/rpc/collections">                                   
+                <div style="margin-bottom: 25px" class="input-group">
+                    <span class="input-group-addon"><i class="glyphicon glyphicon-search"></i></span>
+                    <input id="login-username" type="text" class="form-control" name="word" value="" placeholder="Enter Word">                                       
+                </div>
+
+                <div style="margin-top:10px" class="form-group">
+                    <div class="col-sm-12 controls">
+                      <button id="btn-login" type="submit" class="btn btn-success">Search</button>
+                    </div>
+                </div>
+            </div>
+          </div>
+        </div>
+    </div>
+ <%- include ../layouts/footer %>

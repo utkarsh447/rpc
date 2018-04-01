@@ -84,12 +84,12 @@ app.get("/home/logout",function(req, res){
 
 app.get("/home/profile", VerifyToken, function(req, res){
    var userId = req.session.userId;
-   console.log(userId);
+   // console.log(userId);
 
-   Rps.forge({
-      id:userId
+   Rps.where({
+      user_id:userId
    })
-      .fetch()
+      .fetchAll()
       .then(function(user){
          user1 = user.toJSON();
          res.render('profile', {data: user1});

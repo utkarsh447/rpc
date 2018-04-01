@@ -1,0 +1,92 @@
+KIBANA URL: https://jjlxwzf2ve:q9nssfagds@cherry-1700298-us-east-1.k4s.bonsaiapps.net
+MAIN URL: https://jjlxwzf2ve:q9nssfagds@cherry-1700298.us-east-1.bonsaisearch.net
+
+
+GET /rpc_test1/rpc_data/_search
+{
+  "query": {
+    "match_all": {}
+  }
+}
+
+GET /rpc_test1/_mapping
+
+PUT rpc_test1
+{
+  "settings": {
+    "number_of_shards": 5,
+    "number_of_replicas": 2,
+    "analysis": {
+      "analyzer": {
+        "rpcAnalyzer": {
+          "type": "custom",
+          "tokenizer": "ngram_tokenizer",
+          "filter": [
+            "asciifolding",
+            "lowercase"
+          ]
+        },
+        "keywordAnalyzer": {
+          "type": "custom",
+          "tokenizer": "letter",
+          "filter": [
+            "asciifolding",
+            "lowercase"
+          ]
+        },
+        "searchAnalyzer": {
+          "type": "custom",
+          "tokenizer": "standard",
+          "filter": [
+            "asciifolding",
+            "lowercase"
+          ]
+        }
+      },
+      "tokenizer": {
+         "ngram_tokenizer": {
+                    "type": "edge_ngram",
+                    "min_gram": "2",
+                    "max_gram": "10",
+                    "token_chars": [ "letter", "digit" ]
+          }
+      }
+    }
+  },
+  "mappings": {
+      "rpc_data": {
+        "properties": {
+          "userid": {
+            "type": "long"
+          },
+          "rpname": {
+            "type": "text",
+            "fielddata": true
+          },
+          "rptext": {
+            "type": "text",
+            "store": true,
+            "term_vector": "with_positions_offsets",
+            "fields": {
+              "raw": {
+                "type": "text",
+                "analyzer": "keywordAnalyzer"
+              }
+            },
+            "analyzer": "rpcAnalyzer",
+            "search_analyzer": "searchAnalyzer"
+          },
+          "created_at": {
+            "type": "long"
+          }
+        }
+      }
+    }
+}
+
+DELETE rpc_test1
+
+PUT /rpc_test1/rpc_data
+{
+  
+}

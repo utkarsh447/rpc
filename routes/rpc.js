@@ -99,7 +99,7 @@ app.get("/", function(req, res){
 
 	var message = 'Stupid Research Paper Catalog';
 	var message1 = '';
-	res.render('rpc/rpc',{message: message, message1: message1});
+	res.render('rpc/rpupload',{message: message, message1: message1});
 })
 
 app.post('/upload',function(req,res){
@@ -112,5 +112,58 @@ app.post('/upload',function(req,res){
         res.redirect("../home/dashboard");
     });
 });
+
+app.get("/collections", function(req, res){
+  res.render("rpc/rpview");
+})
+
+app.post("/collections", function(req, res){
+  var word = req.body.word;
+  // console.log(word);
+  client.search({
+    index: variables.bonsai_index,
+    type: variables.bonsai_type,
+    body:{
+      query:{
+        bool:{
+          must:[
+            {
+              match:{
+                rptext: word
+              }
+            }
+          ]
+        }
+      },
+      highlight: {
+        number_of_fragments: 8,
+        fragment_size: 100,
+        fields: {
+          rptext: {
+            pre_tags: ["<strong>"],
+            post_tags: ["</strong>"]
+          }
+        }
+      }
+    }
+  })
+  .then(function(data, err){
+    if(err){
+      res.sendStatus(500);
+      console.error(err)
+    }
+    else{
+      if(data.hits.hits.length===0){
+        res.redirect("collections")
+      }
+      else{
+        res.render("rpc/rpesres", {
+          data: data.hits.hits
+        });
+      }  
+    }  
+    
+  })
+})
 
 module.exports = app;
