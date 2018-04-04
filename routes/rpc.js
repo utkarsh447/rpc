@@ -34,49 +34,52 @@ var storage =   multer.diskStorage({
 
           // File being uploaded to that userid folder
           callback(null, './uploads/' + req.session.user.id);
-          pdfUtil.pdfToText(pdf_path, function(err, data) {
-            if (err) throw(err);
-            // console.log(data); //Need to store it in DB    
 
-            var userId = req.session.user.id;            
-            var emailid = req.session.user.email;
-            // console.log("userid: " + emailid + userId);
-            Rps.forge({
-              user_id: userId,
-              email_id: emailid,
-              rpname: file.originalname,
-              rplocation: pdf_path,
-              rpdata: data
-            }, { method: "insert"})
-              .save()
-              .then(function(response){
-                console.log("Data Inserted");
-                var response_json = response.toJSON();
-                  client.create({
-                    index: variables.bonsai_index,
-                    type: variables.bonsai_type,
-                    id: Date.now(),
-                    body:{
-                      rpname: response_json.rpname,
-                      rptext: response_json.rpdata,
-                      userid: response_json.user_id,
-                      created_at: Date.now()
-                    }
-                  })
-                    .then(function(err, res){
-                      if(error){
-                        console.error(error);
-                      }
-                      else{
-                        console.log("Successfully Done.");
+            pdfUtil.pdfToText(pdf_path, function(err, data) {
+              if (err) throw(err);
+              // console.log(data); //Need to store it in DB    
+
+              var userId = req.session.user.id;            
+              var emailid = req.session.user.email;
+              // console.log("userid: " + emailid + userId);
+              Rps.forge({
+                user_id: userId,
+                email_id: emailid,
+                rpname: file.originalname,
+                rplocation: pdf_path,
+                rpdata: data
+              }, { method: "insert"})
+                .save()
+                .then(function(response){
+                  console.log("Data Inserted");
+                  var response_json = response.toJSON();
+                    client.create({
+                      index: variables.bonsai_index,
+                      type: variables.bonsai_type,
+                      id: Date.now(),
+                      body:{
+                        rpname: response_json.rpname,
+                        rptext: response_json.rpdata,
+                        userid: response_json.user_id,
+                        fileid: response_json.id,
+                        created_at: Date.now()
                       }
                     })
-              }).catch(function(err){
-                console.error(err);
-              })
+                      .then(function(err, res){
+                        if(error){
+                          console.error(error);
+                        }
+                        else{
+                          res.redirect("../home/dashboard");
+                          console.log("Successfully Done.");
+                        }
+                      })
+                }).catch(function(err){
+                  console.error(err);
+                })
 
-          });
-
+            })       
+          
           
       } else {
           console.log('Some other error: ', err.code);
@@ -154,7 +157,7 @@ app.post("/collections", function(req, res){
     }
     else{
       if(data.hits.hits.length===0){
-        res.redirect("collections")
+        res.redirect("collections");
       }
       else{
         res.render("rpc/rpesres", {
@@ -164,6 +167,18 @@ app.post("/collections", function(req, res){
     }  
     
   })
+})
+
+app.post("/download/:id", function(req, res){
+  var fileid = req.body.fileid;
+  var userid = req.body.userid;
+  var rpname = req.body.rpname;
+  
+  var tempFile = variables.upload_path + userid + "/" + rpname;
+  fs.readFile(tempFile, function (err,data){
+     res.contentType("application/pdf");
+     res.send(data);
+  });
 })
 
 module.exports = app;

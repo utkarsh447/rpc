@@ -1,25 +1,37 @@
 <%- include ../layouts/header %>
 <div class="row">
-    <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6 col-xs-offset-0 col-sm-offset-0 col-md-offset-3 col-lg-offset-3 toppad" >
 
+    <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6 col-xs-offset-0 col-sm-offset-0 col-md-offset-3 col-lg-offset-3 toppad" >
+    <p>TO REDUCE PAGE SIZE AND EXCLUDE PAGINATION, WE HAVE SHOWN ONLY TOP 5 RESULTS OF EACH DOCUMENT</p>
     <% data.forEach(function(message){ %>
       <div class="panel panel-info">
         <div class="panel-heading">
-          <h3 class="panel-title"> <%- message._source.rpname %> :</h3>
+          <form id="downloadform" class="form-horizontal" role="form" method="post" action="/rpc/download/<%= message._source.rpname %>" target="_blank">
+            <input type="hidden" name="fileid" value="<%= message._source.fileid %>">
+            <input type="hidden" name="userid" value="<%= message._source.userid %>">
+            <input type="hidden" name="rpname" value="<%= message._source.rpname %>">
+            <input type="hidden" name="rplocation" value="<%= message._source.rplocation %>">
+            <h3 class="panel-title"> 
+              <button id="btn-login" type="submit" class="btn btn-success">View Pdf</button>
+              <%- message._source.rpname %>              
+            </h3>
+            <p>WITH ES_score: <%- message._score %></p>
+          </form>
+          
         </div>
         <div class="panel-body">
           <div class="row">
             <div class=" col-md-9 col-lg-9 "> 
               <table class="table table-user-information">                 
-                <% message.highlight.rptext.forEach(function(item){ %>
+                <% for(var i=0; i<5; i++){%>
                   <tbody>
                   <ul>
                     <tr>
-                      <td><li><%-item%></li></td>
+                      <td><li><%-message.highlight.rptext[i] %></li></td>
                     </tr>
                   </ul>
                   </tbody>
-                <%    })  %>
+                <%    }  %>
               </table>
             </div>
           </div>

@@ -1,9 +1,31 @@
-KIBANA URL: https://jjlxwzf2ve:q9nssfagds@cherry-1700298-us-east-1.k4s.bonsaiapps.net
-MAIN URL: https://jjlxwzf2ve:q9nssfagds@cherry-1700298.us-east-1.bonsaisearch.net
-
-
 GET /rpc_test1/rpc_data/_search
 {
+  "query": {
+    "bool": {
+      "must": [
+        {
+          "match": {
+            "rptext": "Linus"
+          }
+        }
+      ]
+    }
+  },
+  "highlight": {
+    "number_of_fragments": 8,
+    "fragment_size": 100,
+    "fields": {
+      "rptext": {
+        "pre_tags": ["<strong>"],
+        "post_tags": ["</strong>"]
+      }
+    }
+  }
+}
+
+GET rpc_test1/rpc_data/_search
+{
+   
   "query": {
     "match_all": {}
   }
@@ -14,8 +36,8 @@ GET /rpc_test1/_mapping
 PUT rpc_test1
 {
   "settings": {
-    "number_of_shards": 5,
-    "number_of_replicas": 2,
+    "number_of_shards": 1,
+    "number_of_replicas": 0,
     "analysis": {
       "analyzer": {
         "rpcAnalyzer": {
@@ -59,6 +81,9 @@ PUT rpc_test1
           "userid": {
             "type": "long"
           },
+          "fileid":{
+            "type": "long"
+          },
           "rpname": {
             "type": "text",
             "fielddata": true
@@ -86,7 +111,14 @@ PUT rpc_test1
 
 DELETE rpc_test1
 
-PUT /rpc_test1/rpc_data
+PUT /rpc_test1/rpc_data/1522593813313/_create
 {
-  
+  "created_at": 1522593813313,
+  "userid": 1,
+  "rpname": "Application LAI YS VC 2017.pdf",
+  "fileid": 5,
+  "rptext": """
+  DOCUMENT TEXT
+"""
 }
+
