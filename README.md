@@ -1,6 +1,6 @@
 # rpc
 Full Stack Application to Upload Documents, view and apply search on them using elasticsearch.
-On uploading the document, document is stored in local system(I suggest to implement AWS S3 on your own),<br /> It is then converted into text and uploaded to Elasticsearch in Bonsai Heroku <br />.
+On uploading the document, document is stored in local system(I suggest to implement AWS S3 on your own),<br /> It is then converted into text and uploaded to Elasticsearch in Bonsai Heroku. <br />
 Those text can be searched and output result is displayed based on score.
 
 
