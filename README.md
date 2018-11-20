@@ -9,7 +9,7 @@ Frontend: ejs template<br />
 Database: PostGres Heroku<br />
 ElasticSearch: Bonsai heroku<br />
 
-Also create your own variables.js file with <br />
+Also create your own variables.js file at / using these contents <br />
 exports.upload_path = "Documents Download Path" <br />
 exports.bonsai_url    = "Bonsai URL";<br />
  exports.bonsai_index = "Bonsai Index";<br />
