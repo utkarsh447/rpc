@@ -14,3 +14,22 @@ exports.upload_path = "Documents Download Path" <br />
 exports.bonsai_url    = "Bonsai URL";<br />
  exports.bonsai_index = "Bonsai Index";<br />
 exports.bonsai_type = "Bonsai Type"; <br />
+
+Also create knexfile.js at / using these contents: <br />
+module.exports = {<br />
+   development: {<br />
+    client: 'postgresql',<br />
+    connection: {<br />
+      host : 'AWS Host',<br />
+    	user : 'AWS User',<br />
+    	password : 'AWS Password',<br />
+    	database : 'AWS DB',<br />
+    	port: 5432,<br />
+    	ssl: true<br />
+    }<br />
+  },<br />
+    pool: {<br />
+      min: 2,<br />
+      max: 10<br />
+    }<br />
+}<br />
